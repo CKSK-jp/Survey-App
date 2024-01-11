@@ -5,9 +5,20 @@
 {% block heading %}{{survey_title}}{% endblock %}
 
 {% block content %}
-  <div id="survey-instructions">
-    <p>{{survey_instructions}}</p>
-  </div>
-  <button id="begin-survey" onclick="navToSurvey()">Begin Survey</button>
-  {{ get_flashed_messages() }}
+<div id="survey-instructions">
+  <p>{{survey_instructions}}</p>
+</div>
+<a href="/begin_survey">
+  <button id="begin-survey">Begin Survey</button>
+</a>
+<hr>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for category, message in messages %}
+<div class="flash-message {{ category }}">
+  {{ message }}
+</div>
+{% endfor %}
+{% endwith %}
 {% endblock %}

@@ -1,38 +1,32 @@
-function navToSurvey(nextQ=1) {
-  window.location.href = `/questions/${nextQ}`;
-}
+// async function submitAnswer(qnum) {
+//   let selectedValue = document.querySelector('input[name="option"]:checked');
 
-function submitAnswer(qnum) {
-  let selectedValue = document.querySelector('input[name="option"]:checked');
+//   if (selectedValue) {
+//     selectedValue = selectedValue.value;
 
-  if (selectedValue) {
-    selectedValue = selectedValue.value;
+//     try {
+//       const response = await fetch('/submit_answer', {
+//         method: 'POST',
+//         body: new URLSearchParams({
+//           question_num: qnum,
+//           selected_answer: selectedValue
+//         }),
+//         headers: {
+//           'Content-Type': 'application/x-www-form-urlencoded'
+//         }
+//       });
 
-    fetch('/submit_answer', {
-      method: 'POST',
-      body: new URLSearchParams({
-        question_num: qnum,
-        selected_answer: selectedValue
-      }),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Server Response:', data);
-        // move to next question
-        qnum = parseInt(qnum);
-        if (!isNaN(qnum)) {
-          qnum += 1
-          navToSurvey(qnum)
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Handle errors, if any
-      });
-  } else {
-    console.log('No option selected');
-  }
-}
+//       const data = await response.json();
+//       console.log('Server Response:', data);
+
+//       if (data.next_question_num !== undefined) {
+//         // Use window.location.replace for navigation
+//         window.location.replace(`/questions/${data.next_question_num}`);
+//       }
+//     } catch (error) {
+//       console.error('Error:', error);
+//     }
+//   } else {
+//     console.log('No option selected');
+//   }
+// }

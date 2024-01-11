@@ -8,5 +8,6 @@
   <div id="survey-instructions">
     <p>{{survey_instructions}}</p>
   </div>
-  <button id="begin-survey" onclick="navToSurvey(0)">Begin Survey</button>
+  <button id="begin-survey" onclick="navToSurvey()">Begin Survey</button>
+  {{ get_flashed_messages() }}
 {% endblock %}

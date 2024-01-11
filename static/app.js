@@ -1,15 +1,12 @@
-function navToSurvey(qnum) {
-  window.location.href = `/questions/${qnum}`;
-  console.log('button pressed')
+function navToSurvey(nextQ=1) {
+  window.location.href = `/questions/${nextQ}`;
 }
 
 function submitAnswer(qnum) {
-
   let selectedValue = document.querySelector('input[name="option"]:checked');
 
   if (selectedValue) {
     selectedValue = selectedValue.value;
-    console.log('Selected Value:', selectedValue);
 
     fetch('/submit_answer', {
       method: 'POST',
@@ -25,8 +22,11 @@ function submitAnswer(qnum) {
       .then(data => {
         console.log('Server Response:', data);
         // move to next question
-        qnum = parseInt(qnum) + 1
-        navToSurvey(qnum)
+        qnum = parseInt(qnum);
+        if (!isNaN(qnum)) {
+          qnum += 1
+          navToSurvey(qnum)
+        }
       })
       .catch(error => {
         console.error('Error:', error);

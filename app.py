@@ -1,17 +1,19 @@
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 
-from surveys import satisfaction_survey
+from surveys import satisfaction_survey as survey
 
 app = Flask(__name__)
+app.secret_key = "128-046-767"
 
 responses = []
+questions = survey.questions
 
 
 # default landing page for user
 @app.route("/")
-def story_selection():
-    survey_title = satisfaction_survey.title
-    survey_instructions = satisfaction_survey.instructions
+def start_page():
+    survey_title = survey.title
+    survey_instructions = survey.instructions
     return render_template(
         "home.html", survey_title=survey_title, survey_instructions=survey_instructions
     )
@@ -19,23 +21,33 @@ def story_selection():
 
 @app.route("/questions/<question_num>")
 def show_question(question_num):
-    question_num = int(question_num)
-    questions = satisfaction_survey.questions
+    # restart form if bad url is passed
+    try:
+        question_num = int(question_num)
+    except ValueError:
+        flash("Bad Human. Please start the survey from the beginning.")
+        return redirect(url_for("start_page"))
 
-    if question_num < len(questions):
-        question = questions[question_num]
+    if question_num != len(responses) + 1:
+        flash("Bad Human. Do not jump around the survey.")
+        return redirect(url_for("show_question", question_num=len(responses) + 1))
+
+    if question_num < len(questions) + 1:
+        question = questions[question_num - 1]
         question_text = question.question
         choices = question.choices
-        print(f"Question: {question_text}, Choices: {choices}")
-        print(f"Question #{question_num}")
+        # print(f"Question: {question_text}, Choices: {choices}")
+        # print(f"Question #{question_num}")
         return render_template(
             "questions.html",
             question_num=question_num,
             question_text=question_text,
             choices=choices,
         )
+    # redirect to thank you if num responses = length of questions
     else:
-        return render_template("error.html", message="Invalid question number")
+        flash("Thank you for completing the survey!")
+        return redirect(url_for("thank_you"))
 
 
 @app.route("/submit_answer", methods=["POST"])
@@ -46,8 +58,8 @@ def submit_answer():
     responses.append(selected_answer)
     print(responses)
 
-    # Redirect to the next question or a thank-you page
-    if question_num >= len(satisfaction_survey.questions):
+    # Update server status based on question number
+    if question_num == len(questions):
         return jsonify(
             {
                 "status": "survey_completed",
@@ -58,6 +70,12 @@ def submit_answer():
         return jsonify(
             {"status": "success", "message": "Answer submitted successfully."}
         )
+
+
+@app.route("/thankyou")
+def thank_you():
+    survey_title = survey.title
+    return render_template("thank.html", survey_title=survey_title)
 
 
 if __name__ == "__main__":

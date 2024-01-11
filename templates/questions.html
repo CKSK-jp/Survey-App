@@ -7,14 +7,23 @@
 
 {% block content %}
 <div id="form-container">
-  <form id="surveyForm"  onsubmit="submitAnswer('{{ question_num }}')">
+  <form id="surveyForm" onsubmit="submitAnswer('{{ question_num }}')">
     {% for choice in choices%}
-      <label>
-        <input type="radio" name="option" value="{{ choice }}">
-        {{choice}}
-      </label>
+    <label>
+      <input type="radio" name="option" value="{{ choice }}">
+      {{choice}}
+    </label>
     {% endfor %}
     <button type="submit">Submit</button>
   </form>
 </div>
+
+{% if get_flashed_messages() %}
+<div id="flash-messages">
+  {% for message in get_flashed_messages() %}
+  <div class="flash-message">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
 {% endblock %}

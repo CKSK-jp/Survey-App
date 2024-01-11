@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Survey App</title>
-</head>
-<body>
-  
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}{{survey_title}}{% endblock %}
+
+{% block heading %}{{survey_title}}{% endblock %}
+
+{% block content %}
+  <div id="survey-instructions">
+    <p>{{survey_instructions}}</p>
+  </div>
+  <button id="begin-survey" onclick="navToSurvey(0)">Begin Survey</button>
+{% endblock %}

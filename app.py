@@ -1,11 +1,10 @@
-from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 
 from surveys import satisfaction_survey as survey
 
 app = Flask(__name__)
 app.secret_key = "128-046-767"
 
-responses = []
 questions = survey.questions
 
 
@@ -19,6 +18,7 @@ def start_page():
 
 @app.route("/begin_survey")
 def begin_survey():
+    session["responses"] = []
     return redirect(url_for("show_question", question_num=1))
 
 
@@ -34,10 +34,12 @@ def show_question(question_num):
         return redirect(url_for("start_page"))
 
     # check if user jumps a question
-    if question_num != len(responses) + 1:
+    if question_num != len(session.get("responses", [])) + 1:
         print("triggered")
         flash("Bad Human. Do not jump around the survey.", category="warning")
-        return redirect(url_for("show_question", question_num=len(responses) + 1))
+        return redirect(
+            url_for("show_question", question_num=len(session.get("responses", [])) + 1)
+        )
 
     if question_num < len(questions) + 1:
         question = questions[question_num - 1]
@@ -60,8 +62,9 @@ def show_question(question_num):
 @app.route("/submit_answer/<int:question_num>", methods=["POST"])
 def submit_answer(question_num):
     selected_answer = request.form.get("option")
+    responses = session.get("responses", [])
     responses.append(selected_answer)
-    print(responses, question_num)
+    session["responses"] = responses
 
     # Update server status based on question number
     if question_num == len(questions):
